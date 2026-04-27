@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Payroll Data",
+  "description": "Schema for individual payroll records.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "employee_name": {
+        "type": "string",
+        "description": "Employee’s full name"
+      },
+      "employee_id": {
+        "type": "integer",
+        "description": "Numeric employee identifier"
+      },
+      "level": {
+        "type": "string",
+        "enum": ["APPRENTICE", "JOURNEYWORKER"],
+        "description": "APPRENTICE or JOURNEYWORKER"
+      },
+      "occupation": {
+        "type": "string",
+        "description": "Trade (e.g., Electrician, Plumber, Carpenter)"
+      },
+      "week_ending": {
+        "type": "string",
+        "format": "date-time",
+        "description": "The Saturday ending the pay week (ISO 8601 format)"
+      },
+      "daily_hours": {
+        "type": "object",
+        "description": "Daily breakdown of standard and overtime hours.",
+        "properties": {
+          "monday": {"$ref": "#/definitions/day_hours"},
+          "tuesday": {"$ref": "#/definitions/day_hours"},
+          "wednesday": {"$ref": "#/definitions/day_hours"},
+          "thursday": {"$ref": "#/definitions/day_hours"},
+          "friday": {"$ref": "#/definitions/day_hours"},
+          "saturday": {"$ref": "#/definitions/day_hours"},
+          "sunday": {"$ref": "#/definitions/day_hours"}
+        },
+        "required": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+      },
+      "rates": {
+        "type": "object",
+        "description": "Pay rates for standard, overtime, and benefits.",
+        "properties": {
+          "standard": {
+            "type": "number",
+            "description": "Hourly pay rate for standard hours"
+          },
+          "overtime": {
+            "type": "number",
+            "description": "Hourly pay rate for overtime hours"
+          },
+          "benefits": {
+            "type": "number",
+            "description": "Hourly benefits rate"
+          }
+        },
+        "required": ["standard", "overtime", "benefits"]
+      }
+    },
+    "required": ["employee_name", "employee_id", "level", "occupation", "week_ending", "daily_hours", "rates"]
+  },
+  "definitions": {
+    "day_hours": {
+      "type": "object",
+      "properties": {
+        "standard": {
+          "type": "number",
+          "description": "Standard hours worked"
+        },
+        "overtime": {
+          "type": "number",
+          "description": "Overtime hours worked"
+        }
+      },
+      "required": ["standard", "overtime"]
+    }
+  }
+}
