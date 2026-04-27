@@ -73,3 +73,54 @@
 button[role="tab"], button[role="tab"]:hover {
     color: var(--bs-emphasis-color);
 }
+
+.payroll-spend-trend {
+    padding-block: 0.5rem 1rem;
+}
+
+.payroll-spend-trend__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+    text-align: left;
+}
+
+.payroll-spend-trend__summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+}
+
+.payroll-spend-trend__summary-label {
+    color: var(--text);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.payroll-spend-trend__summary-value {
+    color: var(--text-h);
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.payroll-spend-trend__chart {
+    width: 100%;
+    min-height: 420px;
+}
+
+@media (max-width: 768px) {
+    .payroll-spend-trend__summary {
+        align-items: flex-start;
+    }
+
+    .payroll-spend-trend__chart {
+        min-height: 320px;
+    }
+}
+

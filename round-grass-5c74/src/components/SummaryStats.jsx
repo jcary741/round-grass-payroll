@@ -1,6 +1,6 @@
 import React from 'react';
 import {Card, Col, Row} from 'react-bootstrap';
-import {Spinner} from "./spinner.jsx";
+import {Spinner} from "./Spinner";
 
 const SummaryStats = ({stats}) => {
     if (!stats) {

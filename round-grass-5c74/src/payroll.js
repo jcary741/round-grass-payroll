@@ -30,6 +30,26 @@ const DAY_LABELS = {
 const getWeeklyHours = payPeriod => Object.values(payPeriod.daily_hours)
     .reduce((sum, hours) => sum + hours.standard + hours.overtime, 0);
 
+const getHoursBreakdown = payPeriod => Object.values(payPeriod.daily_hours).reduce((totals, hours) => {
+    totals.standard += hours.standard;
+    totals.overtime += hours.overtime;
+    return totals;
+}, {standard: 0, overtime: 0});
+
+const getPayrollSpendBreakdown = payPeriod => {
+    const hours = getHoursBreakdown(payPeriod);
+    const standard = hours.standard * payPeriod.rates.standard;
+    const overtime = hours.overtime * payPeriod.rates.overtime;
+    const benefits = (hours.standard + hours.overtime) * payPeriod.rates.benefits;
+
+    return {
+        standard,
+        overtime,
+        benefits,
+        total: standard + overtime + benefits,
+    };
+}
+
 const getDailyTotals = payPeriod => Object.entries(payPeriod.daily_hours)
     .map(([day, hours]) => ({
         day,
@@ -218,12 +238,7 @@ export async function getSummaryStatistics() {
     const totalOvertimeHours = data.reduce((sum, d) => sum + Object.values(d.daily_hours).reduce((s, h) => s + h.overtime, 0), 0);
     const apprenticeHours = data.filter(d => d.level === 'APPRENTICE').reduce((sum, d) => sum + Object.values(d.daily_hours).reduce((s, h) => s + h.standard + h.overtime, 0), 0);
 
-    const cumulativePayroll = data.reduce((sum, d) => {
-        const standardPay = Object.values(d.daily_hours).reduce((s, h) => s + h.standard, 0) * d.rates.standard;
-        const overtimePay = Object.values(d.daily_hours).reduce((s, h) => s + h.overtime, 0) * d.rates.overtime;
-        const benefitsPay = Object.values(d.daily_hours).reduce((s, h) => s + h.standard + h.overtime, 0) * d.rates.benefits;
-        return sum + standardPay + overtimePay + benefitsPay;
-    }, 0);
+    const cumulativePayroll = data.reduce((sum, d) => sum + getPayrollSpendBreakdown(d).total, 0);
 
     return {
         total_unique_employees: uniqueEmployees,
@@ -233,6 +248,46 @@ export async function getSummaryStatistics() {
         cumulative_payroll_spend: cumulativePayroll,
         apprentice_hours_percentage: (apprenticeHours / (totalStandardHours + totalOvertimeHours)) * 100,
     };
+}
+
+/**
+ * Summarizes payroll spend by week for charting.
+ *
+ * @returns {Promise<Array<Object>>} A promise that resolves to weekly payroll totals.
+ */
+export async function getWeeklyPayrollSpend() {
+    const data = await getPayrollData();
+    const weeks = data.reduce((accumulator, payPeriod) => {
+        const weekEnding = formatDate(payPeriod.week_ending);
+        const breakdown = getPayrollSpendBreakdown(payPeriod);
+
+        if (!accumulator[weekEnding]) {
+            accumulator[weekEnding] = {
+                week_ending: weekEnding,
+                standard: 0,
+                overtime: 0,
+                benefits: 0,
+                total: 0,
+            };
+        }
+
+        accumulator[weekEnding].standard += breakdown.standard;
+        accumulator[weekEnding].overtime += breakdown.overtime;
+        accumulator[weekEnding].benefits += breakdown.benefits;
+        accumulator[weekEnding].total += breakdown.total;
+
+        return accumulator;
+    }, {});
+
+    return Object.values(weeks)
+        .sort((left, right) => new Date(left.week_ending) - new Date(right.week_ending))
+        .map(week => ({
+            ...week,
+            standard: Number(week.standard.toFixed(2)),
+            overtime: Number(week.overtime.toFixed(2)),
+            benefits: Number(week.benefits.toFixed(2)),
+            total: Number(week.total.toFixed(2)),
+        }));
 }
 
 /**

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Table} from 'react-bootstrap';
-import {Spinner} from "./spinner.jsx";
+import {Spinner} from "./Spinner";
 
 // TODO Add table filtering & sorting.
 // TODO Move table into a scroll container
