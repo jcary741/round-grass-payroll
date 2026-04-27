@@ -1,6 +1,10 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
 
+// TODO Add table filtering & sorting.
+// TODO Move table into a scroll container
+// TODO Add table csv download
+
 const FullDataTable = ({ data }) => {
     if (!data) {
         return <div>Loading...</div>;

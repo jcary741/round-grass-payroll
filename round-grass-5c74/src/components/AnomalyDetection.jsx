@@ -1,6 +1,8 @@
 import React from 'react';
 import { Col, Row } from 'react-bootstrap';
 
+// TODO: ask production manager/client about anomalies they've seen in the past that we should be checking for. Fake occupations? Projects that don't allow overtime?
+
 const AnomalyDetection = ({ messages }) => {
     if (!messages) {
         return <div>Loading...</div>;
