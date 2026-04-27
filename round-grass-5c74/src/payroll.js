@@ -1,6 +1,7 @@
 import {formatCurrency, formatDate, formatHours, median} from "./utils.js";
 
 let _data = null;
+
 export async function getPayrollData() {
     if (!_data) {
         const res = await fetch('/payroll_data.json');
@@ -103,8 +104,8 @@ const levenshteinDistance = (left, right) => {
         return left.length;
     }
 
-    const matrix = Array.from({ length: left.length + 1 }, (_, rowIndex) => {
-        return Array.from({ length: right.length + 1 }, (_, columnIndex) => {
+    const matrix = Array.from({length: left.length + 1}, (_, rowIndex) => {
+        return Array.from({length: right.length + 1}, (_, columnIndex) => {
             if (rowIndex === 0) {
                 return columnIndex;
             }
@@ -210,7 +211,7 @@ export async function getEmployeeMetrics() {
  * @returns {Promise<Object>} A promise that resolves to an object containing summary statistics.
  * This includes total unique employees, average wage rates, cumulative payroll spend, and the percentage of hours worked by apprentices.
  */
-export async function getSummaryStatistics(){
+export async function getSummaryStatistics() {
     const data = await getPayrollData();
     const uniqueEmployees = new Set(data.map(d => d.employee_id)).size;
     const totalStandardHours = data.reduce((sum, d) => sum + Object.values(d.daily_hours).reduce((s, h) => s + h.standard, 0), 0);
@@ -239,7 +240,7 @@ export async function getSummaryStatistics(){
  *
  * @returns {Promise<Array<string>>} A promise that resolves to anomaly messages.
  */
-export async function getAnomalyMessages () {
+export async function getAnomalyMessages() {
     const data = await getPayrollData();
     const employees = Object.values(getEmployeeGroups(data));
     const messages = [];
@@ -292,7 +293,7 @@ export async function getAnomalyMessages () {
 
                 if (isRateOutlier(rateValue, baseline)) {
                     messages.push(
-                                    `${employee.name} (ID ${employee.id}) has a ${RATE_LABELS[rateType]} that is ${getDirectionLabel(rateValue, baseline)} than usual (${formatCurrency(rateValue)}) on ${weekEnding}, compared to their typical ${formatCurrency(baseline)}.`,
+                        `${employee.name} (ID ${employee.id}) has a ${RATE_LABELS[rateType]} that is ${getDirectionLabel(rateValue, baseline)} than usual (${formatCurrency(rateValue)}) on ${weekEnding}, compared to their typical ${formatCurrency(baseline)}.`,
                     );
                 }
             }
@@ -314,7 +315,7 @@ export async function getAnomalyMessages () {
         }
     }
 
-    const uniqueEmployees = employees.map(({ name, id }) => ({ name, id }));
+    const uniqueEmployees = employees.map(({name, id}) => ({name, id}));
     for (let index = 0; index < uniqueEmployees.length; index += 1) {
         for (let comparisonIndex = index + 1; comparisonIndex < uniqueEmployees.length; comparisonIndex += 1) {
             const current = uniqueEmployees[index];

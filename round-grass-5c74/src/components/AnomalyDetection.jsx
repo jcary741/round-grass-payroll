@@ -1,11 +1,12 @@
 import React from 'react';
-import { Col, Row } from 'react-bootstrap';
+import {Col, Row} from 'react-bootstrap';
+import {Spinner} from "./spinner.jsx";
 
 // TODO: ask production manager/client about anomalies they've seen in the past that we should be checking for. Fake occupations? Projects that don't allow overtime?
 
-const AnomalyDetection = ({ messages }) => {
+const AnomalyDetection = ({messages}) => {
     if (!messages) {
-        return <div>Loading...</div>;
+        return <Spinner />
     }
 
     return (
